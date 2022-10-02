@@ -1,0 +1,14 @@
+<!--- wtite html home page here -->
+<html xmlns:th="http://www.thymeleaf.org" lang="tr">
+<head>
+    <title>Image List</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+    <h1>Image List</h1>
+    <!--- /api/preview/burgers  list images-->
+    <div th:each="tc : ${images}">
+        <img th:src="${tc.getImageURL()}"/>
+    </div>
+</body>
+</html>
