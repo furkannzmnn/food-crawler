@@ -22,6 +22,6 @@ public class Burger {
     private String description;
     private String imageURL;
     private String fullScreenImageURL;
-    @Enumerated(value = EnumType.STRING)
-    private CategoryType categoryType = CategoryType.BURGER;
+    //@Enumerated(value = EnumType.STRING)
+    //private CategoryType categoryType = CategoryType.BURGER;
 }
