@@ -20,26 +20,18 @@ jobs:
     permissions:
       contents: read
       packages: write
-    services:
-      mysql:
-        image: mysql:5.7
-        ports:
-          - 3306
-        env:
-          MYSQL_USER: root
-          MYSQL_DATABASE: crawler_yemek
-          MYSQL_ROOT_PASSWORD: root
-        options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
 
 
 
     steps:
+    - uses: mirromutth/mysql-action@v1.1
     - name: Verify MYSQL Connection
-      env:
-        run: |
-          sudo /etc/init.d/mysql start
-          mysql -e 'CREATE DATABASE crawler_yemek;' -uroot -proot
-          mysql -e 'SHOW DATABASES;' -uroot -proot
+      with:
+        mysql version: '5.7'
+        mysql database: 'crawler_yemek'
+        mysql root password: 'root'
+        mysql user: 'root'
+        mysql password: 'root'
 
     - uses: actions/checkout@v3
     - name: Set up JDK 11
