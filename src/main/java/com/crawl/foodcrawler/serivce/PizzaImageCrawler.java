@@ -3,7 +3,7 @@ package com.crawl.foodcrawler.serivce;
 import com.crawl.foodcrawler.dto.getir.response.Root;
 import com.crawl.foodcrawler.model.Pizza;
 import com.crawl.foodcrawler.repository.PizzaRepository;
-import com.crawl.foodcrawler.util.ImageFilterConnector;
+import com.crawl.foodcrawler.util.CategoryFilterConnector;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +19,7 @@ public class PizzaImageCrawler {
     private final PizzaRepository pizzaRepository;
 
     public void crawlImage() throws IOException {
-        final Root root = ImageFilterConnector.getHttpURLConnectionCuisine("5c542abd285799656884dc41");
+        final Root root = CategoryFilterConnector.getHttpURLConnectionDetail("5c542abd285799656884dc41");
 
 
         Set<String> uniqueBurgerImageData = new HashSet<>();

@@ -10,8 +10,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Scanner;
 
-public class ImageFilterConnector {
-    public static Root getHttpURLConnectionCuisine(String filter) throws IOException {
+public class CategoryFilterConnector {
+    public static Root getHttpURLConnectionDetail(String filter) throws IOException {
         URL url = new URL("https://food-client-api-gateway.getirapi.com/restaurants/filter");
         HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
         httpConn.setRequestMethod("POST");

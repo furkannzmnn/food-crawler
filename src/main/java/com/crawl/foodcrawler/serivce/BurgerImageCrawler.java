@@ -1,49 +1,65 @@
 package com.crawl.foodcrawler.serivce;
 
-import com.crawl.foodcrawler.dto.getir.response.Root;
+import com.crawl.foodcrawler.dto.getir.detail.Product;
+import com.crawl.foodcrawler.dto.getir.detail.Root;
 import com.crawl.foodcrawler.model.Burger;
 import com.crawl.foodcrawler.repository.BurgerRepository;
+import com.crawl.foodcrawler.util.CategoryFilterConnector;
+import com.crawl.foodcrawler.util.FoodDetailConnector;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.util.HashSet;
-import java.util.Scanner;
+import java.util.Objects;
 import java.util.Set;
-
-import static com.crawl.foodcrawler.util.ImageFilterConnector.getHttpURLConnectionCuisine;
+import java.util.concurrent.ScheduledExecutorService;
 
 @Component
 @RequiredArgsConstructor
 public class BurgerImageCrawler {
 
     private final BurgerRepository burgerRepository;
-
-    private static final Set<String> visited = new HashSet<>();
-
+    private final ObjectMapper objectMapper;
+    private final ScheduledExecutorService scheduledExecutorService;
 
     public void crawlImage() throws IOException {
-        Root root = getHttpURLConnectionCuisine("5c5429bb2857994ab884dc36"); // -> burger code
+        final Product product = getProduct();
 
-        Set<String> uniqueBurgerImageData = new HashSet<>();
+        final Burger burger = Burger.builder()
+                .imageURL(product.imageURL)
+                .fullScreenImageURL(product.fullScreenImageURL)
+                .description(product.description)
+                .price(product.price)
+                .priceText(product.priceText)
+                .name(product.name)
+                .id(product.id)
+                .build();
 
-        root.data.items.forEach(item -> item.cuisines.forEach(cuisine -> {
-            if (cuisine.name.equalsIgnoreCase("burger")) {
-                final String imageURL = item.imageURL;
-                visited.add(imageURL);
-            }
-        }));
+        Set<String> visited = new HashSet<>();
 
-        burgerRepository.findAll().forEach(burger -> uniqueBurgerImageData.add(burger.getImageURL()));
+        burgerRepository.findAll().forEach(b -> visited.add(b.getId()));
 
-        visited.stream().filter(imageUrl -> !uniqueBurgerImageData.contains(imageUrl)).forEach(imageUrl -> {
-            final Burger burger = Burger.builder().imageURL(imageUrl).build();
+        if (!visited.contains(burger.getId())) {
             burgerRepository.save(burger);
-        });
+        }
+    }
 
+    private Product getProduct() throws IOException {
+        String root = FoodDetailConnector.getHttpURLConnectionCuisine("60d42e5211817692745409c2"); // -> burger code
+        final Root json = objectMapper.readValue(root, Root.class);
+
+        if (!Objects.equals(json.result.message, "SUCCESS!!!")) {
+            scheduledExecutorService.submit(() -> {
+                try {
+                    crawlImage();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
+        return json.data.product;
     }
 
 }

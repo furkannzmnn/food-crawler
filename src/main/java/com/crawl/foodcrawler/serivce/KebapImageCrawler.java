@@ -3,7 +3,7 @@ package com.crawl.foodcrawler.serivce;
 import com.crawl.foodcrawler.dto.getir.response.Root;
 import com.crawl.foodcrawler.model.Kebap;
 import com.crawl.foodcrawler.repository.KebapRepository;
-import com.crawl.foodcrawler.util.ImageFilterConnector;
+import com.crawl.foodcrawler.util.CategoryFilterConnector;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +18,7 @@ public class KebapImageCrawler {
     private final KebapRepository kebapRepository;
 
     public void crawlImage() throws IOException {
-        final Root root = ImageFilterConnector.getHttpURLConnectionCuisine("5c542a40285799ac5684dc3b");
+        final Root root = CategoryFilterConnector.getHttpURLConnectionDetail("5c542a40285799ac5684dc3b");
         Set<String> uniqueBurgerImageData = new HashSet<>();
 
 

@@ -5,10 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Table(name = "burger")
 @Entity
@@ -18,7 +15,13 @@ import javax.persistence.Table;
 @Builder
 public class Burger {
     @Id
-    @GeneratedValue(strategy = javax.persistence.GenerationType.AUTO)
-    private Long id;
-    public String imageURL;
+    private String id;
+    private String name;
+    private String priceText;
+    private double price;
+    private String description;
+    private String imageURL;
+    private String fullScreenImageURL;
+    @Enumerated(value = EnumType.STRING)
+    private CategoryType categoryType = CategoryType.BURGER;
 }
