@@ -25,17 +25,15 @@ import java.util.stream.Collectors;
 public class AllRestaurantCrawl {
 
     static final Map<String,Map<String , ArrayList<Product>>> categoryWithProduct = new HashMap<>();
+    private final List<String> categoryList = new ArrayList<>();
     private final ObjectMapper objectMapper;
     private final CategoryRepository categoryRepository;
     private final Logger LOGGER = LoggerFactory.getLogger(AllRestaurantCrawl.class);
 
-    public void crawl() {
 
-
+    @Cacheable("allRestaurants")
+    public Map<String,Map<String , ArrayList<Product>>> crawl() {
         final List<String> restoranIds = RestoranIds.RESTORAN_IDS;
-
-
-        AtomicInteger count = new AtomicInteger();
         restoranIds.forEach(id -> {
             try {
                 if (!categoryWithProduct.containsKey(id)) {
@@ -45,11 +43,15 @@ public class AllRestaurantCrawl {
                         if (root.data.restaurant != null && root.data.restaurant.cuisines != null) {
                             final ArrayList<ProductCategory> productCategories = root.data.productCategories;
                             root.data.productCategories.forEach(log -> {
-                                final CategoryList build = CategoryList.builder().name(log.name).build();
-                                categoryRepository.save(build);
+                                if (!categoryList.contains(log.name)) {
+                                    categoryList.add(log.name);
+                                    final CategoryList build = CategoryList.builder().name(log.name).build();
+                                    categoryRepository.save(build);
+                                    productCategories
+                                            .forEach(product -> categoryWithProduct.put(id, Map.of(product.name, product.products)));
+                                }
                             });
-                            productCategories
-                                    .forEach(product -> categoryWithProduct.put(id, Map.of(product.name, product.products)));
+
                         }
                     }
                 }
@@ -57,27 +59,7 @@ public class AllRestaurantCrawl {
                 //
             }
         });
-
-        categoryRepository.flush();
-        checkCategoryName();
-
-    }
-
-    public void checkCategoryName() {
-        final List<String> strings = categoryRepository.findAll()
-                .stream()
-                .map(CategoryList::getName)
-                .distinct()
-                .collect(Collectors.toList());
-
-        LOGGER.info("" + strings.size());
-
-        categoryRepository.deleteAll();
-
-        strings.forEach(each -> {
-            final CategoryList db = CategoryList.builder().name(each).build();
-            categoryRepository.save(db);
-        });
+        return categoryWithProduct;
 
     }
 }

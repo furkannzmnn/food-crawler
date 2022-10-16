@@ -1,52 +1,35 @@
 package com.crawl.foodcrawler.api;
 
+import com.crawl.foodcrawler.dto.getir.all_restoran_response.Product;
 import com.crawl.foodcrawler.model.Burger;
 import com.crawl.foodcrawler.model.Kebap;
 import com.crawl.foodcrawler.model.Pizza;
 import com.crawl.foodcrawler.repository.BurgerRepository;
 import com.crawl.foodcrawler.repository.KebapRepository;
 import com.crawl.foodcrawler.repository.PizzaRepository;
+import com.crawl.foodcrawler.serivce.AllRestaurantCrawl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/preview")
 @RequiredArgsConstructor
 public class PreviewImageApi {
 
-    private final BurgerRepository burgerRepository;
-    private final KebapRepository kebapRepository;
-    private final PizzaRepository pizzaRepository;
+    private final AllRestaurantCrawl allRestaurantCrawl;
 
 
-    @GetMapping("/burger")
-    public ModelAndView getBurgerPreviewImage() {
-        ModelAndView modelAndView = new ModelAndView("image-list");
-        List<Burger> burgerList = burgerRepository.findAll();
-        modelAndView.addObject("images", burgerList);
-        return modelAndView;
-    }
-
-    @GetMapping("/kebap")
-    public ModelAndView getKebapPreviewImage() {
-        ModelAndView modelAndView = new ModelAndView("image-list");
-        List<Kebap> burgerList = kebapRepository.findAll();
-        modelAndView.addObject("images", burgerList);
-        return modelAndView;
-
-    }
-
-    @GetMapping("/pizza")
-    public ModelAndView getPizzaPreviewImage() {
-        ModelAndView modelAndView = new ModelAndView("image-list");
-        List<Pizza> burgerList = pizzaRepository.findAll();
-        modelAndView.addObject("images", burgerList);
-        return modelAndView;
-
+    @GetMapping("/json")
+    public ResponseEntity<?> getBurgerPreview() {
+        final Map<String, Map<String, ArrayList<Product>>> map = allRestaurantCrawl.crawl();
+        return ResponseEntity.ok(map);
     }
 }

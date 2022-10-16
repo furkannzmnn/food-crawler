@@ -19,8 +19,6 @@ public class FoodCrawlerApplication {
     public static void main(String[] args) throws IOException {
         final ConfigurableApplicationContext ctx = SpringApplication.run(FoodCrawlerApplication.class, args);
 
-       ctx.getBean(AllRestaurantCrawl.class).crawl();
-
     }
 
     @Bean
